@@ -17,17 +17,24 @@ export class Minesweeper {
             this.bombs = this._calculateDefaultBombs();
         else
             this.bombs = bombs;
+
+        this.pole = [];
     }
 
     /**
      * TODO: IMPLEMENT THIS
      * Calculate how many bombs should be on the field and return it.
      * The calculation should Depend on the size of the field.
-     * @private
-     * @return {number} amount of bombs
+     * @private 
+     * @return {} amount of bombs
      */
     _calculateDefaultBombs() {
-        return 10;
+        let CalcBombs = 8;
+        if (this.rows > 10) {
+            for (let i = 0; i < this.rows; i++)
+                defBombs++;
+        }
+        return CalcBombs;
     }
 
     /**
@@ -39,7 +46,7 @@ export class Minesweeper {
      * @return {field}
      */
     getField(x, y) {
-        return field.hidden;
+        return this.array[x][y];
     }
 
     /**
@@ -50,7 +57,26 @@ export class Minesweeper {
      * @return {number}
      */
     getAmountOfSurroundingBombs(x, y) {
-        return 0;
+        let SurroundingBombs = 0;
+        
+        if(this.isBombOnPosition(x+1, y)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x-1, y)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x+1, y+1)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x-1, y+1)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x+1, y-1)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x+1, y-1)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x, y+1)===true)
+            SurroundingBombs++;
+        if(this.isBombOnPosition(x, y-1)===true)
+            SurroundingBombs++;
+            
+        return SurroundingBombs;
     }
 
     /**
@@ -107,7 +133,7 @@ export class Minesweeper {
      * @return {number}
      */
     getRemainingBombCount() {
-        return -1;
+        return this.bombs;
     }
 
 }
