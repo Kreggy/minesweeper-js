@@ -1,4 +1,5 @@
 import {field} from "./models/field.js";
+import {Coords} from "./models/Coords.js";
 
 export class Minesweeper {
 
@@ -18,11 +19,28 @@ export class Minesweeper {
         else
             this.bombs = bombs;
 
-        this.pole = [];
+        this.array = [];
+        for (let i = 0; i < rows; i++) {
+            let tempArray = [];
+            for (let j = 0; j < columns; j++) {
+                tempArray.push(field.hidden);
+            }
+            this.array.push(tempArray);
+        }
+
+        this.bombLoc = [];
+        for (let i = 0; i < this.bombs; i++){
+            let x = Math.floor(Math.random()*columns);
+            let y = Math.floor(Math.random()*rows);
+            let coor = new Coords(x, y);
+            this.bombLoc.push(coor);
+        }
     }
 
+    
+
     /**
-     * TODO: IMPLEMENT THIS
+     * TODO: IMPLEMENT THIS (DONE)
      * Calculate how many bombs should be on the field and return it.
      * The calculation should Depend on the size of the field.
      * @private 
@@ -32,13 +50,13 @@ export class Minesweeper {
         let CalcBombs = 8;
         if (this.rows > 10) {
             for (let i = 0; i < this.rows; i++)
-                defBombs++;
+                CalcBombs++;
         }
         return CalcBombs;
     }
 
     /**
-     * TODO: IMPLEMENT THIS
+     * TODO: IMPLEMENT THIS (DONE)
      * Returns the current state of the field.
      * Fields can be: hidden, visible, flagged or question marked.
      * @param {number} x
@@ -50,7 +68,7 @@ export class Minesweeper {
     }
 
     /**
-     * TODO: IMPLEMENT THIS
+     * TODO: IMPLEMENT THIS (DONE)
      * Returns how many bombs are around the field
      * @param {number} x
      * @param {number} y
@@ -69,7 +87,7 @@ export class Minesweeper {
             SurroundingBombs++;
         if(this.isBombOnPosition(x+1, y-1)===true)
             SurroundingBombs++;
-        if(this.isBombOnPosition(x+1, y-1)===true)
+        if(this.isBombOnPosition(x-1, y-1)===true)
             SurroundingBombs++;
         if(this.isBombOnPosition(x, y+1)===true)
             SurroundingBombs++;
@@ -87,7 +105,11 @@ export class Minesweeper {
      * @return {boolean}
      */
     isBombOnPosition(x, y) {
-        return true;
+        for (let i = 0; i < this.bombLoc.length; i++) {
+            if (this.bombLoc[i].x === x && this.bombLoc[i].y === y)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -98,7 +120,34 @@ export class Minesweeper {
      * @param {number} y
      */
     reveal(x, y) {
+        if (this.isBombOnPosition(x,y) === true) {
+            this.isGameOver = true;
+            this.array[x][y] = field.hidden;
+        }
+        this.revealField(x,y);
+    }
 
+    revealField(x,y) {
+        console.log(this.getAmountOfSurroundingBombs(x,y) === 0 && this.array[x][y] === field.hidden);
+
+        if (this.array[x][y] === field.hidden) {
+            this.array[x][y] = field.visible;
+            if (this.getAmountOfSurroundingBombs(x, y) === 0) {
+
+                if (x + 1 >= 0 && x + 1 < this.rows && y >= 0 && y < this.columns) {
+                    this.revealField(x + 1, y);
+                }
+                if (x - 1 >= 0 && x - 1 < this.rows && y >= 0 && y < this.columns) {
+                    this.revealField(x - 1, y);
+                }
+                if (x >= 0 && x < this.rows && y + 1 >= 0 && y + 1 < this.columns) {
+                    this.revealField(x, y + 1);
+                }
+                if (x >= 0 && x < this.rows && y - 1 >= 0 && y - 1 < this.columns) {
+                    this.revealField(x, y - 1);
+                }
+            }
+        }
     }
 
     /**
@@ -108,6 +157,16 @@ export class Minesweeper {
      * @param {number} y
      */
     toggleFieldState(x, y) {
+        if (this.array[x][y] === field.hidden)
+            this.array[x][y] = field.flag;
+
+        else if (this.array[x][y] === field.flag)
+            this.array[x][y] = field.question_mark;
+
+        else if ( this.array[x][y] === field.question_mark)
+            this.array[x][y] = field.hidden;
+
+        else this.array[y][x] = field.visible;
     }
 
     /**
@@ -116,6 +175,7 @@ export class Minesweeper {
      * @returns {boolean}
      */
     didWin() {
+        if(this.isGameOver == false)
         return false;
     }
 
@@ -125,7 +185,8 @@ export class Minesweeper {
      * @returns {boolean}
      */
     didLoose() {
-        return false;
+        if(this.isGameOver == true)
+        return true;
     }
 
     /**

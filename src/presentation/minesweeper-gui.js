@@ -72,12 +72,12 @@ export class MinesweeperGUI {
 
     /**
      * Selects the correct icon/number and returns it
-     * @param {number} x
      * @param {number} y
+     * @param {number} x
      * @return {string}
      * @private
      */
-    _getIcon(x, y) {
+    _getIcon(y, x) {
         if (this.game.isGameOver && this.game.isBombOnPosition(x, y))
             return '💣';
         else
@@ -92,7 +92,7 @@ export class MinesweeperGUI {
                         </div>
                     `;
                 case field.flag:
-                    return '<div class="hidden">🏴</div>';
+                    return '<div class="hidden">F</div>';
                 case field.question_mark:
                     return '<div class="hidden">❓</div>';
             }
